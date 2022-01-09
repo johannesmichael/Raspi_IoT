@@ -34,7 +34,7 @@ def sense_forever():
         print(f'value: {pressure}, num samples: {N}, total: {total}, moving average: {movingAvg}')
         sleep(1)
         sensor_data = namedtuple("sensor_data", ["pressure", "N", "total", "movingAvg"])
-        return sensor_data(pressure, N, total, movingAvg)
+        #return sensor_data(pressure, N, total, movingAvg)
 
 sensor = Thread(target=sense_forever)
 sensor.daemon = True
