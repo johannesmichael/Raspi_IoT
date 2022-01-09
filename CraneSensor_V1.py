@@ -2,7 +2,9 @@ import hp206c
 from collections import namedtuple, deque
 from threading import Thread
 import RPi.GPIO as GPIO
-import time
+from time import sleep
+from picamera import PiCamera
+from datetime import utcnow
 
 
 h= hp206c.hp206c()
@@ -30,15 +32,20 @@ def sense_forever():
         total = sum(samples)
         movingAvg = total/N
         print(f'value: {pressure}, num samples: {N}, total: {total}, moving average: {movingAvg}')
-        time.sleep(1)
+        sleep(1)
         sensor_data = namedtuple("sensor_data", ["pressure", "N", "total", "movingAvg"])
         return sensor_data(pressure, N, total, movingAvg)
 
-sensor = threading.Thread(target=sense_forever)
+sensor = Thread(target=sense_forever)
 sensor.daemon = True
 sensor.start()
 
 
+#camera.start_preview()
+#sleep(2)
+#utcnow().strftime('%B %d %Y - %H:%M:%S')
+#camera.capture('/home/pi/Data/Images/image'+ str(utcnow())'.jpg')
+#camera.stop_preview()
 
 
 # try:
