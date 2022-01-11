@@ -21,24 +21,34 @@ temp=h.ReadTemperature()
 pressure=h.ReadPressure()
 altitude=h.ReadAltitude()
 
+camera = PiCamera()
 
-def sense_forever():
+camera.start_preview() 
+sleep(2)   
+samples = deque(maxlen=10)
+moving_average = 0
+try:
     while True:
-        samples = deque(maxlen=5)
+        utcnow().strftime('%B %d %Y - %H:%M:%S')
         pressure = h.ReadPressure()
         samples.append(pressure)
+        moving_average_old = moving_average
         # Show sample, number of samples, total and moving average
         N = len(samples)
         total = sum(samples)
-        movingAvg = total/N
-        print(f'value: {pressure}, num samples: {N}, total: {total}, moving average: {movingAvg}')
-        sleep(1)
-        sensor_data = namedtuple("sensor_data", ["pressure", "N", "total", "movingAvg"])
-        #return sensor_data(pressure, N, total, movingAvg)
-
-sensor = Thread(target=sense_forever)
-sensor.daemon = True
-sensor.start()
+        moving_average = total/N
+        print('test')
+        print(f'value: {pressure}, num samples: {N}, total: {total}, moving average: {moving_average}')
+        if abs(moving_average - moving_average_old) < 3:
+            camera.capture('/home/pi/Data/Images/image'+ str(utcnow())'.jpg')
+        sleep(0.5)
+    #sensor_data = namedtuple("sensor_data", ["pressure", "N", "total", "movingAvg"])
+    #return sensor_data(pressure, N, total, movingAvg)
+except: KeyboardInterrupt
+    camera.stop_preview()
+#sensor = Thread(target=sense_forever)
+#sensor.daemon = True
+#sensor.start()
 
 
 #camera.start_preview()
